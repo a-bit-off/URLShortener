@@ -1,17 +1,20 @@
 package sqlite
 
 import (
-	"URLShortener/internal/storage"
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/mattn/go-sqlite3"
+
+	"URLShortener/internal/storage"
 )
 
 type Storage struct {
 	db *sql.DB
 }
 
+// Создаем таблицу url для хранения url и alias
 func New(storagePath string) (*Storage, error) {
 	const op = "storage.sqlite.New"
 
@@ -21,13 +24,7 @@ func New(storagePath string) (*Storage, error) {
 	}
 
 	// init db
-	stmt, err := db.Prepare(`
-	CREATE TABLE IF NOT EXISTS url(
-	    id INTEGER PRIMARY KEY,
-	    alias TEXT NOT NULL UNIQUE,
-	    url TEXT NOT NULL);
-	CREATE INDEX IF NOT EXISTS idx_alias ON url(alias);
-	`)
+	stmt, err := db.Prepare(storage.CreateTableURL)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -43,7 +40,7 @@ func New(storagePath string) (*Storage, error) {
 func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 	const op = "storage.sqlite.SaveURL"
 
-	stmt, err := s.db.Prepare("INSERT INTO url(url, alias) VALUES(?, ?);")
+	stmt, err := s.db.Prepare(storage.InsertIntoURL)
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
@@ -88,25 +85,22 @@ func (s *Storage) GetURL(alias string) (string, error) {
 func (s *Storage) DeleteURL(alias string) error {
 	const op = "storage.sqlite.DeleteURL"
 
-	stmt, err := s.db.Prepare("DELETE FROM url WHERE alias == ?;")
+	stmt, err := s.db.Prepare(storage.DeleteFromURL)
 	if err != nil {
-		fmt.Errorf("%s: %w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = stmt.Exec(alias)
+	res, err := stmt.Exec(alias)
 	if err != nil {
-		if errors.Is(err, storage.ErrURLNotFound) {
-			fmt.Errorf("%s: %w", op, errors.New("Alias not exist"))
-		}
-		fmt.Errorf("%s: %w", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	//// ошибка при попытке удаления несуществующего alias
-	//if rowsAff, err := res.RowsAffected(); err != nil {
-	//	fmt.Errorf("%s: %w", op, err)
-	//} else if rowsAff == 0 {
-	//	fmt.Errorf("%s: %w", op, errors.New("Alias not exist"))
-	//}
+	// ошибка при попытке удаления несуществующего alias
+	if rowsAff, err := res.RowsAffected(); err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	} else if rowsAff == 0 {
+		return fmt.Errorf("%s: %w", op, errors.New("Alias not exist"))
+	}
 
 	return nil
 }

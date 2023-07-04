@@ -2,17 +2,22 @@
 package save
 
 import (
-	"URLShortener/internal/lib/api/response"
-	"URLShortener/internal/lib/logger/sl"
-	"URLShortener/internal/lib/random"
-	"URLShortener/internal/storage"
 	"errors"
+	"net/http"
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator"
 	"golang.org/x/exp/slog"
-	"net/http"
+
+	"URLShortener/internal/lib/api/response"
+	"URLShortener/internal/lib/logger/sl"
+	"URLShortener/internal/lib/random"
+	"URLShortener/internal/storage"
 )
+
+// TODO: move to config if needed
+const aliasLength = 6
 
 type Request struct {
 	URL   string `json:"url" validate:"required,url"`
@@ -23,9 +28,6 @@ type Response struct {
 	response.Response
 	Alias string `json:"alias,omitempty"`
 }
-
-// TODO: move to config if needed
-const aliasLength = 6
 
 type URLSaver interface {
 	SaveURL(urlToSave string, alias string) (int64, error)

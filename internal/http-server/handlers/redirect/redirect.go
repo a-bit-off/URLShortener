@@ -1,15 +1,17 @@
 package redirect
 
 import (
-	"URLShortener/internal/lib/api/response"
-	"URLShortener/internal/lib/logger/sl"
-	"URLShortener/internal/storage"
 	"errors"
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"golang.org/x/exp/slog"
-	"net/http"
+
+	"URLShortener/internal/lib/api/response"
+	"URLShortener/internal/lib/logger/sl"
+	"URLShortener/internal/storage"
 )
 
 type URLGetter interface {

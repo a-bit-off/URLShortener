@@ -2,19 +2,20 @@ package response
 
 import (
 	"fmt"
-	"github.com/go-playground/validator"
 	"strings"
+
+	"github.com/go-playground/validator"
+)
+
+const (
+	StatusOK    = "OK"
+	StatusError = "Error"
 )
 
 type Response struct {
 	Status string `json:"status"`
 	Error  string `json:"error,omitempty"`
 }
-
-const (
-	StatusOK    = "OK"
-	StatusError = "Error"
-)
 
 func OK() Response {
 	return Response{

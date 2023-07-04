@@ -1,3 +1,10 @@
+/*
+Этот код предоставляет шаблон для создания промежуточного слоя (middleware),
+который добавляет логирование в HTTP-обработчики. Он расширяет функциональность
+переданного логгера, добавляет контекст и информацию о запросе в каждую запись
+лога и оборачивает обработчик для отслеживания статус кода, количества переданных
+байтов и времени выполнения запроса.
+*/
 package logger
 
 import (
@@ -8,7 +15,6 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// TODO: refactor: http-server.middleware.logger 59:00
 func New(log *slog.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		log = log.With(
@@ -17,6 +23,7 @@ func New(log *slog.Logger) func(next http.Handler) http.Handler {
 
 		log.Info("logger middleware enabled")
 
+		// HTTP-обработчик
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			entry := log.With(
 				slog.String("method", r.Method),
@@ -25,8 +32,8 @@ func New(log *slog.Logger) func(next http.Handler) http.Handler {
 				slog.String("user_agent", r.UserAgent()),
 				slog.String("request_id", middleware.GetReqID(r.Context())),
 			)
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			t1 := time.Now()
 			defer func() {
 				entry.Info("request completed",

@@ -4,10 +4,11 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
 	"time"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
@@ -28,7 +29,10 @@ type HTTPServer struct {
 	IdleTimeout time.Duration `yaml:"idle-timeout" env-default:"60s"`
 }
 
-// Приставка Must означает что фукция будет ПАНИКОВАТЬ, а не возвращать ошибку
+/*
+Загружает конфигурацию в cleanenv
+Приставка Must означает что фукция будет ПАНИКОВАТЬ, а не возвращать ошибку
+*/
 func MustLoad(configPath string) *Config {
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
