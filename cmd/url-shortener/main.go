@@ -14,7 +14,7 @@ import (
 	"URLShortener/internal/http-server/handlers/redirect"
 	"URLShortener/internal/http-server/handlers/url/save"
 	mwLogger "URLShortener/internal/http-server/middleware/logger"
-	"URLShortener/internal/lib/logger/hadlers/slogpretty"
+	"URLShortener/internal/lib/logger/handlers/slogpretty"
 	"URLShortener/internal/lib/logger/sl"
 	"URLShortener/internal/storage/sqlite"
 )
@@ -42,7 +42,7 @@ func main() {
 	initMiddleware(router, log)
 
 	// init handlers
-	initHandlers(router, log, storage)
+	initHandlers(cfg, router, log, storage)
 
 	// run server
 	runServer(cfg, router, log)
@@ -107,8 +107,8 @@ func initMiddleware(router *chi.Mux, log *slog.Logger) {
 	router.Use(middleware.URLFormat) // обработка url
 }
 
-func initHandlers(router *chi.Mux, log *slog.Logger, storage *sqlite.Storage) {
-	router.Post("/url", save.New(log, storage))
+func initHandlers(cfg *config.Config, router *chi.Mux, log *slog.Logger, storage *sqlite.Storage) {
+	router.Post("/url", save.New(cfg, log, storage))
 	router.Get("/{alias}", redirect.New(log, storage))
 	router.Delete("/url/{alias}", delete.New(log, storage))
 }

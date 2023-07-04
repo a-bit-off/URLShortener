@@ -2,6 +2,8 @@
 package save
 
 import (
+	"URLShortener/internal/config"
+	"URLShortener/internal/lib/random"
 	"errors"
 	"net/http"
 
@@ -12,12 +14,11 @@ import (
 
 	"URLShortener/internal/lib/api/response"
 	"URLShortener/internal/lib/logger/sl"
-	"URLShortener/internal/lib/random"
 	"URLShortener/internal/storage"
 )
 
-// TODO: move to config if needed
-const aliasLength = 6
+// генерация mock
+//go:generate go run github.com/vektra/mockery/v2@v2.20.2 --name=URLSaver
 
 type Request struct {
 	URL   string `json:"url" validate:"required,url"`
@@ -31,10 +32,10 @@ type Response struct {
 
 type URLSaver interface {
 	SaveURL(urlToSave string, alias string) (int64, error)
+	GetURL(alias string) (string, error)
 }
 
-// TODO: refactor: handlers.url.save.New
-func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
+func New(cfg *config.Config, log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.save.New"
 
@@ -61,28 +62,48 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		}
 
 		alias := req.Alias
-		if alias == "" {
-			alias = random.NewRandomString(aliasLength)
+		// генерирует рандомный alias в случае отсутсвия
+		err = generateUniqueAlias(cfg, urlSaver, &alias)
+		if err != nil {
+			log.Error("failed to generate alias", sl.Err(err))
+			render.JSON(w, r, response.Error("failed to generate alias"))
+			return
 		}
 
+		// сохраняем данны в бд
 		id, err := urlSaver.SaveURL(req.URL, alias)
-
-		// TODO: write alias unique checker
 		if errors.Is(err, storage.ErrURLExists) {
 			log.Info("url already exists", slog.String("url", req.URL))
 			render.JSON(w, r, response.Error("url already exists"))
 			return
 		}
-
 		if err != nil {
 			log.Error("failed to add url", sl.Err(err))
-			render.JSON(w, r, response.Error("failed to add irl"))
+			render.JSON(w, r, response.Error("failed to add url"))
 			return
 		}
 
 		log.Info("url added", slog.Int64("id", id))
 		responseOK(w, r, alias)
 	}
+}
+
+func generateUniqueAlias(cfg *config.Config, urlSaver URLSaver, alias *string) error {
+	if *alias != "" {
+		return nil
+	}
+	for {
+		*alias = random.NewRandomString(cfg.AliasLength)
+
+		//	проверка на уникальность в базе данных
+		url, err := urlSaver.GetURL(*alias)
+		if url == "" {
+			return nil
+		} else if err != nil {
+			return err
+		}
+	}
+	return errors.New("failed to generate alias")
 }
 
 func responseOK(w http.ResponseWriter, r *http.Request, alias string) {
