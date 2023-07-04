@@ -5,7 +5,7 @@ Write in your terminal `git clone https://github.com/a-bit-off/URLShortener`
 To start a project you need to be in main dir `"URLShotener"`, and write `make` in your terminal
 ## Stack
 congig - cleanenv <br />
-logger - slog
-storage - sqlite
-router - chi, middleware
+logger - slog <br />
+storage - sqlite <br />
+router - chi, middleware <br />
 
