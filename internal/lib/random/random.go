@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// TODO: write test
+// TODO: add: test
 
 func NewRandomString(size int) string {
 	rnd := rand.New(

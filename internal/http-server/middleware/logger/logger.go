@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// TODO: refactor 59:00
+// TODO: refactor: http-server.middleware.logger 59:00
 func New(log *slog.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		log = log.With(

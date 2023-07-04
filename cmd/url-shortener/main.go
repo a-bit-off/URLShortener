@@ -2,6 +2,8 @@ package main
 
 import (
 	"URLShortener/internal/config"
+	"URLShortener/internal/http-server/handlers/delete"
+	"URLShortener/internal/http-server/handlers/redirect"
 	"URLShortener/internal/http-server/handlers/url/save"
 	mwLogger "URLShortener/internal/http-server/middleware/logger"
 	"URLShortener/internal/lib/logger/hadlers/slogpretty"
@@ -15,6 +17,7 @@ import (
 	"os"
 )
 
+// TODO: refactor: main
 func main() {
 	// init config: cleanenv
 	configPath := flag.String("CONFIG_PATH", "", "path to config")
@@ -46,8 +49,11 @@ func main() {
 
 	// handlers
 	router.Post("/url", save.New(log, storage))
-	log.Info("starting server", slog.String("address", cfg.Address))
+	router.Get("/{alias}", redirect.New(log, storage))
+	router.Delete("/url/{alias}", delete.New(log, storage))
 
+	// run server
+	log.Info("starting server", slog.String("address", cfg.Address))
 	srv := &http.Server{
 		Addr:         cfg.Address,
 		Handler:      router,
@@ -55,8 +61,6 @@ func main() {
 		WriteTimeout: cfg.HTTPServer.Timeout,
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
-
-	// run server
 	if err := srv.ListenAndServe(); err != nil {
 		log.Error("failed to start server")
 	}

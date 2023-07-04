@@ -1,4 +1,4 @@
-// TODO: refactor 1:06:00
+// TODO: refactor: lib.logger.slogpretty 1:06:00
 package slogpretty
 
 import (
