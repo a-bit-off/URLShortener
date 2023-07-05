@@ -1,4 +1,6 @@
 # URLShortener
+## Description
+This is a rest API service that shortens links, you can run it on your server and use it
 ## Download
 Write in your terminal `git clone https://github.com/a-bit-off/URLShortener`
 ## Build
