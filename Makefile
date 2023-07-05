@@ -3,6 +3,7 @@ CONFIG_PATH := config/local.yml
 all: tests run
 
 run:
+	mkdir -p storage
 	go run cmd/url-shortener/main.go -CONFIG_PATH=$(CONFIG_PATH)
 
 tests:
