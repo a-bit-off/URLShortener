@@ -1,20 +1,23 @@
 package save_test
 
 import (
-	"URLShortener/internal/config"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"URLShortener/internal/config"
+	"URLShortener/internal/http-server/handlers/redirect"
 	"URLShortener/internal/http-server/handlers/url/save"
 	"URLShortener/internal/http-server/handlers/url/save/mocks"
+	"URLShortener/internal/lib/api"
 	"URLShortener/internal/lib/logger/handlers/slogdiscard"
 )
 
@@ -28,32 +31,8 @@ func TestSaveHandler(t *testing.T) {
 	}{
 		{
 			name:  "Success",
-			alias: "test_alias",
-			url:   "https://google.com",
-		},
-		{
-			name:  "Empty alias",
-			alias: "",
-			url:   "https://google.com",
-		},
-		{
-			name:      "Empty URL",
-			url:       "",
-			alias:     "some_alias",
-			respError: "field URL is a required field",
-		},
-		{
-			name:      "Invalid URL",
-			url:       "some invalid URL",
-			alias:     "some_alias",
-			respError: "field URL is not a valid URL",
-		},
-		{
-			name:      "SaveURL Error",
-			alias:     "test_alias",
-			url:       "https://google.com",
-			respError: "failed to add url",
-			mockError: errors.New("unexpected error"),
+			alias: "abitov",
+			url:   "https://github.com/a-bit-off",
 		},
 	}
 
@@ -63,16 +42,33 @@ func TestSaveHandler(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
+			// Getter
 			urlSaverMock := mocks.NewURLSaver(t)
 
 			if tc.respError == "" || tc.mockError != nil {
-				urlSaverMock.On("SaveURL", tc.url, mock.AnythingOfType("string")).
-					Return(int64(1), tc.mockError).
-					Once()
+				urlSaverMock.On("GetURL", tc.alias).Return(tc.url, tc.mockError).Once()
 			}
 
-			// TODO: refactor
-			handler := save.New(&config.Config{AliasLength: 6}, slogdiscard.NewDiscardLogger(), urlSaverMock)
+			r := chi.NewRouter()
+			r.Get("/{alias}", redirect.New(slogdiscard.NewDiscardLogger(), urlSaverMock))
+
+			ts := httptest.NewServer(r)
+			defer ts.Close()
+
+			redirectedToURL, err := api.GetRedirect(ts.URL + "/" + tc.alias)
+			require.NoError(t, err)
+			assert.Equal(t, tc.url, redirectedToURL)
+
+			// Save
+			urlSaverMock = mocks.NewURLSaver(t)
+
+			if tc.respError == "" || tc.mockError != nil {
+				urlSaverMock.On("SaveURL", tc.url, mock.AnythingOfType("string")).
+					Return(int64(1), tc.mockError).Once()
+			}
+
+			cfg := &config.Config{AliasLength: 6}
+			handler := save.New(cfg, slogdiscard.NewDiscardLogger(), urlSaverMock)
 
 			input := fmt.Sprintf(`{"url": "%s", "alias": "%s"}`, tc.url, tc.alias)
 
@@ -92,7 +88,6 @@ func TestSaveHandler(t *testing.T) {
 
 			require.Equal(t, tc.respError, resp.Error)
 
-			// TODO: add more checks
 		})
 	}
 }

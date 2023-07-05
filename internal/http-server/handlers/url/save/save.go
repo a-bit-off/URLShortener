@@ -2,8 +2,6 @@
 package save
 
 import (
-	"URLShortener/internal/config"
-	"URLShortener/internal/lib/random"
 	"errors"
 	"net/http"
 
@@ -12,8 +10,10 @@ import (
 	"github.com/go-playground/validator"
 	"golang.org/x/exp/slog"
 
+	"URLShortener/internal/config"
 	"URLShortener/internal/lib/api/response"
 	"URLShortener/internal/lib/logger/sl"
+	"URLShortener/internal/lib/random"
 	"URLShortener/internal/storage"
 )
 

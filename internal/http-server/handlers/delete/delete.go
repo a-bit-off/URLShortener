@@ -14,6 +14,9 @@ import (
 	"URLShortener/internal/storage"
 )
 
+// генерация mock
+//go:generate go run github.com/vektra/mockery/v2@v2.20.2 --name=URLDeleter
+
 type Response struct {
 	response.Response
 	Alias string `json:"alias,omitempty"`

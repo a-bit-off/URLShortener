@@ -1,10 +1,10 @@
 package redirect_test
 
 import (
-	"github.com/go-chi/chi"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
