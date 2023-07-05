@@ -1,13 +1,13 @@
 # URLShortener
 
 ## Description
-This is a rest API service that shortens links, you can run it on your server and use it
+This is a rest API service that shortens links, you can run it on your server and use.
 
 ## Download
-Write in your terminal `git clone https://github.com/a-bit-off/URLShortener`
+Write in your terminal `git clone https://github.com/a-bit-off/URLShortener`.
 
 ## Build
-To start a project you need to be in main dir `"URLShortener"`, and write `make` in your terminal
+To start a project you need to be in main dir `"URLShortener"`, and write `make` in your terminal.
 
 ## Usage
 You started the service locally with the `make` command. <br />
@@ -37,9 +37,9 @@ Delete URL: <br />
 Or you may use Postman <br />
 
 ## Stack
-config - `cleanenv` <br />
-logger - `slog` <br />
-storage - `sqlite` <br />
-router - `chi`, `middleware` <br />
-build - `Makefile` <br />
-test - `httptest`, `testing`, `mockery` <br />
+config - `cleanenv`. <br />
+logger - `slog`. <br />
+storage - `sqlite`. <br />
+router - `chi`, `middleware`. <br />
+build - `Makefile`. <br />
+test - `httptest`, `testing`, `mockery`. <br />
