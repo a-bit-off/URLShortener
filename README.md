@@ -12,7 +12,7 @@ To start a project you need to be in main dir `"URLShortener"`, and write `make`
 ## Usage
 You started the service locally with the `make` command. <br />
 In the `local.yml` configuration file, you can see on which host you are running it (`8082`). The URL looks like this: `"http://localhost:8082"`. <br />
-You have the ability to add, delete and get a link by alias. <br />
+You have the ability to add, delete and get a link by alias. <br /> <br />
 Add: <br />
 curl -X POST -H "Content-Type: application/json" -d '{
      "url": "your url",
