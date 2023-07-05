@@ -23,7 +23,7 @@ Get: <br />
 `"http://localhost:8082/" + "your alias"` <br /> <br />
  
 Delete URL: <br />
-`"http://localhost:8082/" + "your alias"` <br /> <br />
+`"http://localhost:8082/url/" + "your alias"` <br /> <br />
 
 ## Stack
 config - `cleanenv` <br />
