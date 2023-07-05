@@ -17,12 +17,11 @@ You have the ability to add, delete and get a link by alias. <br />
 <br />
 
 Add: <br />
+In your terminal: <br />
 `curl -X POST -H "Content-Type: application/json" -d '{
      "url": "your url",
      "alias": "your alias"
 }' http://localhost:8082/url` <br />
-
-Or you may use Postman <br />
 
 <br />
 
@@ -34,6 +33,8 @@ Get: <br />
 Delete URL: <br />
 `"http://localhost:8082/url/" + "your alias"` <br />
 
+<br />
+Or you me use Postman <br />
 <br />
 
 ## Stack
