@@ -14,16 +14,16 @@ You started the service locally with the `make` command. <br />
 In the `local.yml` configuration file, you can see on which host you are running it (`8082`). The URL looks like this: `"http://localhost:8082"`. <br />
 You have the ability to add, delete and get a link by alias. <br /> <br />
 Add: <br />
-curl -X POST -H "Content-Type: application/json" -d '{
+`curl -X POST -H "Content-Type: application/json" -d '{
      "url": "your url",
      "alias": "your alias"
-}' http://localhost:8082/url <br /> <br />
+}' http://localhost:8082/url` <br /> <br />
 
 Get: <br />
 `"http://localhost:8082/" + "your alias"` <br /> <br />
  
 Delete URL: <br />
-"http://localhost:8082/" + "your alias" <br /> <br />
+`"http://localhost:8082/" + "your alias"` <br /> <br />
 
 ## Stack
 config - `cleanenv` <br />
