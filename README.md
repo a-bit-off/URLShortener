@@ -9,4 +9,4 @@ logger - `slog` <br />
 storage - `sqlite` <br />
 router - `chi`, `middleware` <br />
 build - `Makefile` <br />
-
+test - `httptest, testing, mockery` <br />
