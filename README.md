@@ -35,7 +35,6 @@ Delete URL: <br />
 
 <br />
 Or you me use Postman <br />
-<br />
 
 ## Stack
 config - `cleanenv` <br />
