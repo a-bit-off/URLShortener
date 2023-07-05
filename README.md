@@ -34,7 +34,7 @@ Delete URL: <br />
 `"http://localhost:8082/url/" + "your alias"` <br />
 
 <br />
-Or you me use Postman <br />
+Or you may use Postman <br />
 
 ## Stack
 config - `cleanenv` <br />
